@@ -286,29 +286,31 @@ class ControllerBehavior extends Behavior
             $module = Yii::$app->getModule('admin/stats');
         else
             $module = Yii::$app->getModule('stats');
+        
+        $hasReferrer = $request->getReferrer() !== null;
 
-        if(preg_match('/(?!&)utm_([a-z0-9=%]+)/i', $request->getReferrer()) || preg_match('/(?!&)utm_([a-z0-9=%]+)/i', $request->getUrl()))
+        if($hasReferrer && preg_match('/(?!&)utm_([a-z0-9=%]+)/i', $request->getReferrer()) || preg_match('/(?!&)utm_([a-z0-9=%]+)/i', $request->getUrl()))
             return Visitors::TYPE_FROM_ADVERTS;
 
-        if (count($module->advertisingSystems) > 0) {
-            $patterns = implode($module->advertisingSystems, "|");
+        if ($hasReferrer && count($module->advertisingSystems) > 0) {
+            $patterns = implode("|", $module->advertisingSystems);
             if(preg_match('/('.$patterns.')/i', $request->getReferrer()) || preg_match('/('.$patterns.')/i', $request->getUrl()))
                 return Visitors::TYPE_FROM_ADVERTS;
         }
 
-        if ($request->getReferrer() === null)
+        if (!$hasReferrer)
             return Visitors::TYPE_DERECT_ENTRY;
         else if (preg_match("($request->hostName)", $request->getReferrer()))
             return Visitors::TYPE_INNER_VISIT;
 
-        if (count($module->searchEngines) > 0) {
-            $patterns = implode($module->searchEngines, "|");
+        if ($hasReferrer && count($module->searchEngines) > 0) {
+            $patterns = implode("|", $module->searchEngines);
             if(preg_match('/('.$patterns.')/i', $request->getReferrer()))
                 return Visitors::TYPE_FROM_SEARCH;
         }
 
-        if (count($module->socialNetworks) > 0) {
-            $patterns = implode($module->socialNetworks, "|");
+        if ($hasReferrer && count($module->socialNetworks) > 0) {
+            $patterns = implode("|", $module->socialNetworks);
             if(preg_match('/('.$patterns.')/i', $request->getReferrer()))
                 return Visitors::TYPE_FROM_SOCIALS;
         }
