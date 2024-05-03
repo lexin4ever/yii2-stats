@@ -219,6 +219,8 @@ class Visitors extends ActiveRecord
             'title' => Yii::t('app/modules/stats', 'Unknown'),
             'icon' => 'icon-unknown'
         ];
+        
+        if (!$user_agent) return $platform;
 
         foreach ($platforms as $regex => $value) {
             if (preg_match($regex, $user_agent)) {
@@ -234,6 +236,8 @@ class Visitors extends ActiveRecord
             'title' => Yii::t('app/modules/stats', 'Unknown'),
             'icon' => 'icon-unknown'
         ];
+        
+        if (!$user_agent) return $browser;
 
         foreach ($browsers as $regex => $value) {
             if (preg_match($regex, $user_agent)) {
